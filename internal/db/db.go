@@ -24,6 +24,7 @@ func NewDatabase()(*Database, error) {
                             os.Getenv("DB_PASSWORD"),
                             os.Getenv("SSL_MODE"))
     conn, err := sqlx.Connect("postgres", dataConn)
+   
     if  err != nil {
             return &Database{}, fmt.Errorf("could not  connect to the database: %w", err)
     }
