@@ -26,7 +26,7 @@ func convertCommentRowtoComment(c CommentRow) comment.Comment{
 }
 func (d *Database) GetComment(ctx context.Context, uuid string)(comment.Comment, error){
     var cmtRow CommentRow
-    fmt.Println("inside Getcomment ad id =", uuid)
+  
     row :=  d.Client.QueryRowContext(ctx,`SELECT * FROM comments WHERE id = $1`, uuid)
 
     err := row.Scan(&cmtRow.ID, &cmtRow.Slug, &cmtRow.Body, &cmtRow.Author)
