@@ -2,7 +2,6 @@ package http
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -32,10 +31,14 @@ func NewHandler(service CommentService) *Handler{
      }
      h.Router = mux.NewRouter()
      h.Routers()
+   
+     h.Router.Use(JSONMiddleWare)
+     h.Router.Use(LoggingMiddleWare)
+     h.Router.Use(TimeOutMiddleWare)
      
      h.Server= &http.Server{
         Addr: "0.0.0.0:8080",
-        Handler: h.Router,
+        Handler:  h.Router ,
      }
     
      return &h
@@ -47,14 +50,12 @@ func NewHandler(service CommentService) *Handler{
 //   http://localhost:8080/api/v1/comment
 
 func (h *Handler)Routers(){
-        h.Router.HandleFunc("/api/v1/comment", h.PostComment).Methods("POST")
+        h.Router.HandleFunc("/api/v1/comment",JWTAuth(h.PostComment)).Methods("POST")
         h.Router.HandleFunc("/api/v1/comment/{id}", h.GetComment).Methods("GET")
         h.Router.HandleFunc("/api/v1/comment/{id}", h.UpdateComment).Methods("PUT")
         h.Router.HandleFunc("/api/v1/comment/{id}", h.DeleteComment).Methods("DELETE")
 }
-func (h *Handler)Home(w http.ResponseWriter, r *http.Request){
-       fmt.Fprint(w, "HOME")
-}
+ 
 
 func (h  *Handler)Serve() error{
     go func(){

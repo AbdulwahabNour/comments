@@ -18,7 +18,7 @@ type Response struct {
 }
 
 func(h *Handler)PostComment(w http.ResponseWriter, r * http.Request){
-
+ 
     var cmt comment.Comment
  
    if err := json.NewDecoder(r.Body).Decode(&cmt); err != nil{
@@ -100,6 +100,7 @@ func(h *Handler)DeleteComment(w http.ResponseWriter, r * http.Request){
     vars := mux.Vars(r)
 
     id := vars["id"]
+ 
     if id == ""{
        w.WriteHeader(http.StatusBadRequest)
        return
@@ -111,5 +112,5 @@ func(h *Handler)DeleteComment(w http.ResponseWriter, r * http.Request){
       return
    }
    json.NewEncoder(w).Encode(Response{Message:"Done"})
-    
+ 
 }

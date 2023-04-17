@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 )
 var(
     ErrFetchingComment = errors.New("failed to fetch comment by id")
@@ -62,8 +63,9 @@ func(s *Service)  UpdateComment(ctx context.Context, cmt Comment)(Comment, error
 }
  
 func(s *Service)  DeleteComment(ctx context.Context, uuid string) error{
-    
+    time.Sleep(20 * time.Second)
      err := s.Store.DeleteComment(ctx, uuid)
+     
     if err != nil{
         return fmt.Errorf("%w,  %w", ErrFetchingComment, err) 
     }
