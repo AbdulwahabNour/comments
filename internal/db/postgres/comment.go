@@ -1,11 +1,11 @@
-package db
+package postgres
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
 
-	"github.com/AbdulwahabNour/comments/internal/comment"
+	"github.com/AbdulwahabNour/comments/internal/model"
 	"github.com/google/uuid"
 )
 
@@ -15,8 +15,9 @@ type CommentRow struct{
     Body sql.NullString
     Author sql.NullString
 }
-func convertCommentRowtoComment(c CommentRow) comment.Comment{
-    return comment.Comment{
+
+func convertCommentRowtoComment(c *CommentRow) *model.Comment{
+    return &model.Comment{
 
         ID: c.ID,
         Slug: c.Slug.String,
@@ -24,19 +25,19 @@ func convertCommentRowtoComment(c CommentRow) comment.Comment{
         Author: c.Author.String,
     }
 }
-func (d *Database) GetComment(ctx context.Context, uuid string)(comment.Comment, error){
+func (d *Database) GetComment(ctx context.Context, uuid string)(*model.Comment, error){
     var cmtRow CommentRow
   
     row :=  d.Client.QueryRowContext(ctx,`SELECT * FROM comments WHERE id = $1`, uuid)
 
     err := row.Scan(&cmtRow.ID, &cmtRow.Slug, &cmtRow.Body, &cmtRow.Author)
     if err != nil{
-        return comment.Comment{}, fmt.Errorf("error fetching the comment by uuid: %s, err => %w", uuid, err )
+        return &model.Comment{}, fmt.Errorf("error fetching the comment by uuid: %s, err => %w", uuid, err )
     }
    
-    return convertCommentRowtoComment(cmtRow), nil
+    return convertCommentRowtoComment(&cmtRow), nil
 }
-func(d *Database) PostComment(ctx context.Context, cmt comment.Comment)(comment.Comment, error){
+func(d *Database) PostComment(ctx context.Context, cmt *model.Comment)(*model.Comment, error){
 
         cmt.ID = uuid.New().String()
         postRow := CommentRow{
@@ -47,12 +48,12 @@ func(d *Database) PostComment(ctx context.Context, cmt comment.Comment)(comment.
         }
         rows, err := d.Client.NamedQueryContext(ctx,`INSERT INTO comments(id, slug, author, body) VALUES (:id, :slug, :author, :body)`, postRow)
         if err != nil{
-            return comment.Comment{},  fmt.Errorf("failed insert the commet err: %w", err)
+            return &model.Comment{},  fmt.Errorf("failed insert the comment err: %w", err)
         }
         if err := rows.Close(); err != nil{
-            return comment.Comment{}, fmt.Errorf("failed to close rows: %w", err)
+            return &model.Comment{}, fmt.Errorf("failed to close rows: %w", err)
         }
-   return convertCommentRowtoComment(postRow), nil
+   return convertCommentRowtoComment(&postRow), nil
 }
 
 func(d *Database) DeleteComment(ctx context.Context, uuid string) error{
@@ -60,23 +61,23 @@ func(d *Database) DeleteComment(ctx context.Context, uuid string) error{
     _, err := d.Client.ExecContext(ctx, `DELETE FROM comments WHERE id = $1 `, uuid)
  
     if err != nil{
-        return  fmt.Errorf("error retrive data after delete error is %w", err)
+        return  fmt.Errorf( err.Error())
     }
 
 
     return nil
 }
 
-func(d *Database) UpdateComment(ctx context.Context, cmt comment.Comment)(comment.Comment, error){
+func(d *Database) UpdateComment(ctx context.Context, cmt *model.Comment)(*model.Comment, error){
  
   
     rows, err := d.Client.NamedQueryContext(ctx, ` UPDATE comments SET slug = :slug, author = :author, body = :body WHERE id = :id`, cmt)
  
     if err != nil{
-        return  comment.Comment{}, fmt.Errorf("error update data error is %w", err)
+        return  &model.Comment{}, fmt.Errorf("error update data error is %w", err)
     }
     if err := rows.Close(); err != nil{
-        return comment.Comment{}, fmt.Errorf("failed to close rows: %w", err)
+        return &model.Comment{}, fmt.Errorf("failed to close rows: %w", err)
     }
 
     return  cmt, nil

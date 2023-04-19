@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/AbdulwahabNour/comments/internal/comment"
-	"github.com/AbdulwahabNour/comments/internal/db"
+	"github.com/AbdulwahabNour/comments/internal/db/postgres"
+	"github.com/AbdulwahabNour/comments/internal/service"
 	"github.com/AbdulwahabNour/comments/internal/transport/http"
 )
 
@@ -12,7 +12,7 @@ import (
 // and start up the application
 func Run() error{
     fmt.Println("starting up the application")
-    db, err := db.NewDatabase()
+    db, err := postgres.NewDatabase()
  
     if err != nil{
         fmt.Println("Failed to connect to the database %w", err)
@@ -23,7 +23,7 @@ func Run() error{
         return err
     } 
 
-    serv := comment.NewService(db)
+    serv := service.NewService(db)
     
 
     httpHandler := http.NewHandler(serv)
@@ -38,5 +38,5 @@ func Run() error{
 }
 func main(){
     Run()
-    fmt.Println("Hello")
+   
 }

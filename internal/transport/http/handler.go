@@ -8,24 +8,21 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/AbdulwahabNour/comments/internal/comment"
+	"github.com/AbdulwahabNour/comments/internal/db"
 	"github.com/gorilla/mux"
 )
 
-type CommentService interface{
-    GetComment( context.Context,  string)(comment.Comment, error)
-    PostComment( context.Context,  comment.Comment)(comment.Comment, error)
-    DeleteComment( context.Context,  string) (error)
-    UpdateComment( context.Context,  comment.Comment)(comment.Comment, error)
+ 
+type Response struct {
+    Message string 
 }
-
 type Handler struct{
     Server *http.Server
     Router *mux.Router
-    Service CommentService
+    Service db.Service
 }
 
-func NewHandler(service CommentService) *Handler{
+func NewHandler(service db.Service) *Handler{
      h := Handler{
         Service: service,
      }
@@ -44,16 +41,19 @@ func NewHandler(service CommentService) *Handler{
      return &h
 }
 
-// curl -X POST \
-//   -H "Content-Type: application/json" \
-//   -d '{"slug":"Hello", "body":"body", "autor":"test"}' \
-//   http://localhost:8080/api/v1/comment
+ 
 
 func (h *Handler)Routers(){
         h.Router.HandleFunc("/api/v1/comment",JWTAuth(h.PostComment)).Methods("POST")
         h.Router.HandleFunc("/api/v1/comment/{id}", h.GetComment).Methods("GET")
         h.Router.HandleFunc("/api/v1/comment/{id}", h.UpdateComment).Methods("PUT")
         h.Router.HandleFunc("/api/v1/comment/{id}", h.DeleteComment).Methods("DELETE")
+
+        h.Router.HandleFunc("/api/v1/user",JWTAuth(h.PostUser)).Methods("POST")
+        h.Router.HandleFunc("/api/v1/user/{id}", h.GetUser).Methods("GET")
+        h.Router.HandleFunc("/api/v1/user/{id}", h.UpdateUser).Methods("PUT")
+        h.Router.HandleFunc("/api/v1/user/{id}", h.DeleteUser).Methods("DELETE")
+        
 }
  
 
