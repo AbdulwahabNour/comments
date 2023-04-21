@@ -46,13 +46,15 @@ func NewHandler(service db.Service) *Handler{
 func (h *Handler)Routers(){
         h.Router.HandleFunc("/api/v1/comment",JWTAuth(h.PostComment)).Methods("POST")
         h.Router.HandleFunc("/api/v1/comment/{id}", h.GetComment).Methods("GET")
-        h.Router.HandleFunc("/api/v1/comment/{id}", h.UpdateComment).Methods("PUT")
-        h.Router.HandleFunc("/api/v1/comment/{id}", h.DeleteComment).Methods("DELETE")
-
+        h.Router.HandleFunc("/api/v1/comment/{id}", JWTAuth(h.UpdateComment)).Methods("PUT")
+        h.Router.HandleFunc("/api/v1/comment/{id}", JWTAuth(h.DeleteComment)).Methods("DELETE")
+       
+     
+        h.Router.HandleFunc("/api/v1/user/signin", h.SignIn).Methods("GET") 
+        h.Router.HandleFunc("/api/v1/user/{id}", h.GetUser).Methods("GET") 
         h.Router.HandleFunc("/api/v1/user",JWTAuth(h.PostUser)).Methods("POST")
-        h.Router.HandleFunc("/api/v1/user/{id}", h.GetUser).Methods("GET")
-        h.Router.HandleFunc("/api/v1/user/{id}", h.UpdateUser).Methods("PUT")
-        h.Router.HandleFunc("/api/v1/user/{id}", h.DeleteUser).Methods("DELETE")
+        h.Router.HandleFunc("/api/v1/user/{id}", JWTAuth(h.UpdateUser)).Methods("PUT")
+        h.Router.HandleFunc("/api/v1/user/{id}", JWTAuth(h.DeleteUser)).Methods("DELETE")
         
 }
  

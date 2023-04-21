@@ -30,10 +30,11 @@ func (d *Database) GetComment(ctx context.Context, uuid string)(*model.Comment, 
   
     row :=  d.Client.QueryRowContext(ctx,`SELECT * FROM comments WHERE id = $1`, uuid)
 
-    err := row.Scan(&cmtRow.ID, &cmtRow.Slug, &cmtRow.Body, &cmtRow.Author)
+    err := row.Scan(&cmtRow.ID, &cmtRow.Slug, &cmtRow.Author, &cmtRow.Body)
     if err != nil{
         return &model.Comment{}, fmt.Errorf("error fetching the comment by uuid: %s, err => %w", uuid, err )
     }
+  
    
     return convertCommentRowtoComment(&cmtRow), nil
 }

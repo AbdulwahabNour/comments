@@ -46,6 +46,7 @@ func(h *Handler)GetComment(w http.ResponseWriter, r * http.Request){
         w.WriteHeader(http.StatusBadRequest)
         return
     }
+
     cmt, err := h.Service.GetComment(r.Context(), id)
     if err != nil{
         log.Println( err)
@@ -62,10 +63,10 @@ func(h *Handler)GetComment(w http.ResponseWriter, r * http.Request){
 }
 
 func(h *Handler)UpdateComment(w http.ResponseWriter, r * http.Request){
-    vars := mux.Vars(r)
+  
     var cmt model.Comment
 
-     id := vars["id"]
+     id :=  mux.Vars(r)["id"]
      if id == ""{
         w.WriteHeader(http.StatusBadRequest)
         return
@@ -76,7 +77,7 @@ func(h *Handler)UpdateComment(w http.ResponseWriter, r * http.Request){
         w.WriteHeader(http.StatusInternalServerError)
         return
      }
-
+        cmt.ID = id
      _, err := h.Service.UpdateComment(r.Context(), &cmt)
 
      if err != nil{
@@ -110,7 +111,7 @@ func(h *Handler)DeleteComment(w http.ResponseWriter, r * http.Request){
    if err := h.Service.DeleteComment(r.Context(), id); err != nil{
 
         log.Println(err)
-        w.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(w).Encode(Response{Message: err.Error()})
 
         return
    }

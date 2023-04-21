@@ -9,6 +9,9 @@ type User struct{
     Email string `json:"email" db:"email"`
     CreatedAt time.Time `json:"created_at" db:"create_at"`
 }
-
+type UserCredentials struct{
+    Email string `json:"email"`
+    Password string `json:"password"`
+}
 
  

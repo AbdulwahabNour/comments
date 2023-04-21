@@ -15,6 +15,7 @@ type Service interface{
     UpdateComment( context.Context,  *model.Comment)(*model.Comment, error)
     
     GetUser( context.Context,  int64)(*model.User, error)
+    GetUserByEmail(ctx context.Context, data *model.User) (*model.User, error)
     PostUser( context.Context,  *model.User)(*model.User, error)
     DeleteUser( context.Context,  string) (error)
     UpdateUser( context.Context,  *model.User)(*model.User, error)

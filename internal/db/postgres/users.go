@@ -26,6 +26,23 @@ func(db *Database) GetUser(ctx context.Context, id int64)(*model.User, error){
     return &user, nil
 }
 
+func(db *Database) GetUserByEmail(ctx context.Context, data *model.User)(*model.User, error){
+    var user model.User
+    row := db.Client.QueryRowContext(ctx, `SELECT * FROM users WHERE email = $1`, data.Email)
+    err := row.Scan(
+        &user.ID,
+        &user.Username,
+        &user.Password,
+        &user.Email,
+        &user.CreatedAt)
+
+        if err != nil{
+       
+            return &model.User{}, fmt.Errorf("error fetching user by email and password %v err:%w", data, err)
+        }
+        return &user, nil
+}
+
 func(db * Database) PostUser(ctx context.Context, user *model.User)(*model.User, error){
     var u model.User
     row  := db.Client.QueryRowContext(ctx, `INSERT INTO users(username, password, email) VALUES ($1, $2, $3) RETURNING id, username, password, email, create_at`, user.Username, user.Password, user.Email)

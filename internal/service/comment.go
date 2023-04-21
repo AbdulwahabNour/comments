@@ -10,7 +10,9 @@ import (
  
 
 func(s *Service) GetComment(ctx context.Context, id string)(*model.Comment, error){
+    
     cmt, err := s.Store.GetComment(ctx, id)
+    
     if err != nil {
         log.Println(err)
         return &model.Comment{}, ErrFetchingComment
