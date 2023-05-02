@@ -41,12 +41,11 @@ func(h *Handler)SignIn(w http.ResponseWriter, r *http.Request){
         json.NewEncoder(w).Encode(Response{Message:err.Error()})
         return
      }
-
+ 
      jwtClaims := jwt.MapClaims{
         "id": user.ID,
         "username": user.Username,
         "email": user.Email,
-        "created_at": user.CreatedAt.Unix(),
         "exp": time.Now().Add(time.Hour * 24).Unix(),
     }
 

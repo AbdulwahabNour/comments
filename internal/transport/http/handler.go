@@ -44,7 +44,7 @@ func NewHandler(service db.Service) *Handler{
  
 
 func (h *Handler)Routers(){
-        h.Router.HandleFunc("/api/v1/comment",JWTAuth(h.PostComment)).Methods("POST")
+        h.Router.HandleFunc("/api/v1/comment", JWTAuth(h.PostComment)).Methods("POST")
         h.Router.HandleFunc("/api/v1/comment/{id}", h.GetComment).Methods("GET")
         h.Router.HandleFunc("/api/v1/comment/{id}", JWTAuth(h.UpdateComment)).Methods("PUT")
         h.Router.HandleFunc("/api/v1/comment/{id}", JWTAuth(h.DeleteComment)).Methods("DELETE")
