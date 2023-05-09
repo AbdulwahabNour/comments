@@ -1,7 +1,11 @@
 package model
 type Comment struct{
     ID string `json:"id" db:"id"`
-    Slug string `json:"slug" db:"slug"`
+    UserId int64 `json:"user_id" db:"user_id"`
     Body string `json:"body" db:"body"`
-    Author string `json:"author" db:"author"`
+   
+}
+
+type CommentBody struct{
+    Body string `json:"body"`
 }

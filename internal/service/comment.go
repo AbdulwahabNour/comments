@@ -8,10 +8,12 @@ import (
 )
 
  
+type commentFunc func(*model.Comment) error
 
-func(s *Service) GetComment(ctx context.Context, id string)(*model.Comment, error){
-    
-    cmt, err := s.Store.GetComment(ctx, id)
+
+func(s *Service) GetComment(ctx context.Context, cmt *model.Comment)(*model.Comment, error){
+
+    cmt, err := s.Store.GetComment(ctx, cmt)
     
     if err != nil {
         log.Println(err)
@@ -24,22 +26,23 @@ func(s *Service) GetComment(ctx context.Context, id string)(*model.Comment, erro
 
 func(s *Service)  UpdateComment(ctx context.Context, cmt *model.Comment)(*model.Comment, error){
     
-    if  cmt.Author == "" || cmt.Body == "" || cmt.Slug == ""{
-        return &model.Comment{}, ErrEmptyFilds
-    }
-
-    comment, err := s.Store.UpdateComment(ctx, cmt)
+    err := runCommentValidate(cmt, minCommentBodyLength, maxCommentBodyLength)
+    if err != nil{
+        return nil, err
+      }
+     
+    cmt, err = s.Store.UpdateComment(ctx, cmt)
     if err != nil{
         log.Println(err)
         return &model.Comment{}, ErrUpdatingComment
     }
-    return  comment, nil
+    return  cmt, nil
 }
  
-func(s *Service)  DeleteComment(ctx context.Context, uuid string) error{
+func(s *Service)  DeleteComment(ctx context.Context, cmt *model.Comment) error{
     
     
-     err := s.Store.DeleteComment(ctx, uuid)
+     err := s.Store.DeleteComment(ctx, cmt)
      
     if err != nil{
         log.Println(err)
@@ -50,13 +53,17 @@ func(s *Service)  DeleteComment(ctx context.Context, uuid string) error{
     return  nil
 }
 func(s *Service) PostComment(ctx context.Context, cmt *model.Comment)(*model.Comment, error){
-    if  cmt.Author == "" || cmt.Body == "" || cmt.Slug == ""{
-        return &model.Comment{}, ErrEmptyFilds
+   
+    err := runCommentValidate(cmt, minCommentBodyLength, maxCommentBodyLength)
+    if err != nil{
+    return nil, err
     }
+ 
+   
     comment, err := s.Store.PostComment(ctx, cmt)
     if err != nil {
         log.Println(err)
-        return &model.Comment{}, ErrInsertComment
+        return nil, ErrInsertComment
     }
 
     return comment, err

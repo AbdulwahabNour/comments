@@ -19,12 +19,12 @@ func Run() error{
         return err
     }
     if err := db.MigrateDB(); err != nil{
-        fmt.Println("failed to migrate database", err)
+        fmt.Println("failed to migrate database", err) 
         return err
     } 
 
     serv := service.NewService(db)
-    
+ 
 
     httpHandler := http.NewHandler(serv)
 
